@@ -7,32 +7,31 @@
 
 class LCG {
 private:
-    uint32_t value;
-    static constexpr uint32_t a = 1664525;
-    static constexpr uint32_t c = 1013904223;
+    uint64_t value;
+    const uint64_t a = 1664525;
+    const uint64_t c = 1013904223;
+    const uint64_t m = 4294967296ULL; // 2^32
     
 public:
-    LCG(uint32_t seed) : value(seed) {}
+    LCG(uint64_t seed) : value(seed) {}
     
-    uint32_t next() {
-        value = a * value + c;
+    uint64_t next() {
+        value = (a * value + c) % m;
         return value;
     }
 };
 
-int64_t max_subarray_sum(int n, uint32_t seed, int min_val, int max_val) {
+int64_t max_subarray_sum(int n, uint64_t seed, int min_val, int max_val) {
     LCG lcg_gen(seed);
-    int range = max_val - min_val + 1;
-    
     std::vector<int> random_numbers;
     random_numbers.reserve(n);
     
+    int range = max_val - min_val + 1;
     for (int i = 0; i < n; ++i) {
         random_numbers.push_back(lcg_gen.next() % range + min_val);
     }
     
     int64_t max_sum = std::numeric_limits<int64_t>::min();
-    
     for (int i = 0; i < n; ++i) {
         int64_t current_sum = 0;
         for (int j = i; j < n; ++j) {
@@ -46,12 +45,12 @@ int64_t max_subarray_sum(int n, uint32_t seed, int min_val, int max_val) {
     return max_sum;
 }
 
-int64_t total_max_subarray_sum(int n, uint32_t initial_seed, int min_val, int max_val) {
+int64_t total_max_subarray_sum(int n, uint64_t initial_seed, int min_val, int max_val) {
     int64_t total_sum = 0;
     LCG lcg_gen(initial_seed);
     
     for (int i = 0; i < 20; ++i) {
-        uint32_t seed = lcg_gen.next();
+        uint64_t seed = lcg_gen.next();
         total_sum += max_subarray_sum(n, seed, min_val, max_val);
     }
     
@@ -61,7 +60,7 @@ int64_t total_max_subarray_sum(int n, uint32_t initial_seed, int min_val, int ma
 int main() {
     // Parameters
     int n = 10000;
-    uint32_t initial_seed = 42;
+    uint64_t initial_seed = 42;
     int min_val = -10;
     int max_val = 10;
     
@@ -69,11 +68,11 @@ int main() {
     int64_t result = total_max_subarray_sum(n, initial_seed, min_val, max_val);
     auto end_time = std::chrono::high_resolution_clock::now();
     
-    std::chrono::duration<double> duration = end_time - start_time;
+    std::chrono::duration<double> elapsed = end_time - start_time;
     
     std::cout << "Total Maximum Subarray Sum (20 runs): " << result << std::endl;
     std::cout << "Execution Time: " << std::fixed << std::setprecision(6) 
-              << duration.count() << " seconds" << std::endl;
+              << elapsed.count() << " seconds" << std::endl;
     
     return 0;
 }
