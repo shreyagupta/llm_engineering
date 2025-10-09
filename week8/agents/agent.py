@@ -21,8 +21,8 @@ class Agent:
     # Reset code to return to default color
     RESET = '\033[0m'
 
-    name: str = ""
-    color: str = '\033[37m'
+    name: str = "" #default no name
+    color: str = '\033[37m' #default is white
 
     def log(self, message):
         """

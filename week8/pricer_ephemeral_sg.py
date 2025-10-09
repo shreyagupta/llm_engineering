@@ -12,10 +12,10 @@ secrets = [modal.Secret.from_name("hf-secret")]
 GPU = "T4"
 BASE_MODEL = "meta-llama/Meta-Llama-3.1-8B"
 PROJECT_NAME = "pricer"
-HF_USER = "ed-donner" # your HF name here! Or use mine if you just want to reproduce my results.
-RUN_NAME = "2024-09-13_13.04.39"
+HF_USER = "shreshre"#"ed-donner" # your HF name here! Or use mine if you just want to reproduce my results.
+RUN_NAME = "2025-10-08_20.02.52"#"2024-09-13_13.04.39"
 PROJECT_RUN_NAME = f"{PROJECT_NAME}-{RUN_NAME}"
-REVISION = "e8d637df551603dc86cd7a1598a8f44af4d7ae36"
+REVISION = None #"e8d637df551603dc86cd7a1598a8f44af4d7ae36"
 FINETUNED_MODEL = f"{HF_USER}/{PROJECT_RUN_NAME}"
 
 
@@ -64,61 +64,3 @@ def price(description: str) -> float:
     contents = contents.replace(',','')
     match = re.search(r"[-+]?\d*\.\d+|\d+", contents)
     return float(match.group()) if match else 0
-
-"""
----
-
-### Why `match.group()` is needed
-
-When you do:
-
-```python
-match = re.search(pattern, contents)
-```
-
-* The variable `match` is **not** the text that matched.
-* It’s a **`re.Match` object**, which contains **metadata** about the match — like:
-
-  * the full matched text,
-  * where it starts and ends in the string,
-  * any groups (submatches) inside parentheses.
-
-To actually get the **text** that was matched (e.g., `"45.67"`),
-you need to call `.group()` on that match object:
-
-```python
-match.group()
-```
-
----
-
-### Analogy
-
-Think of `match` as a **container** that stores info about what was matched.
-`.group()` is how you **open that container** and pull out the matched text itself.
-
----
-
-### Example:
-
-```python
-import re
-
-text = "Price: 45.67 USD"
-match = re.search(r"[-+]?\d*\.\d+|\d+", text)
-
-print(match)          # <re.Match object; span=(7, 12), match='45.67'>
-print(match.group())  # '45.67'
-```
-
-* `match` → is an object with data like `span=(7, 12)` (the indices in the text).
-* `match.group()` → just gives you the string `"45.67"`, which you can then convert to a float.
-
----
-
-So, in short:
-✅ **`match`** = object describing the match.
-✅ **`match.group()`** = the **actual text** that matched the regex.
-
-
-"""
