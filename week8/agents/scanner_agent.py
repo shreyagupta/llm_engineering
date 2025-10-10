@@ -78,16 +78,29 @@ class ScannerAgent(Agent):
         if scraped:
             user_prompt = self.make_user_prompt(scraped)
             self.log("Scanner Agent is calling OpenAI using Structured Output")
-            result = self.openai.beta.chat.completions.parse(
-                model=self.MODEL,
-                messages=[
+
+            ## Earlier I was using the beta version but switched to production
+            # result = self.openai.beta.chat.completions.parse(
+            #     model=self.MODEL,
+            #     messages=[
+            #         {"role": "system", "content": self.SYSTEM_PROMPT},
+            #         {"role": "user", "content": user_prompt}
+            #   ],
+            #     response_format=DealSelection
+            # )
+            # result = result.choices[0].message.parsed
+
+            # The beta version is now in production, so using productionized call
+            result = self.openai.responses.parse(
+                model="gpt-4o-mini",
+                input=[
                     {"role": "system", "content": self.SYSTEM_PROMPT},
-                    {"role": "user", "content": user_prompt}
-              ],
-                response_format=DealSelection
+                    {"role": "user", "content": user_prompt},
+                ],
+                text_format=DealSelection #this is how get structured output so a format description is not necessary in the system and user prompt but its always good to describe it in both places.
             )
-            result = result.choices[0].message.parsed
-            result.deals = [deal for deal in result.deals if deal.price>0]
+            result = result.output_parsed
+            result.deals = [deal for deal in result.deals if deal.price>0] #remove any deals if the price is <=0 because we don't want any deals with 0 price
             self.log(f"Scanner Agent received {len(result.deals)} selected deals with price>0 from OpenAI")
             return result
         return None

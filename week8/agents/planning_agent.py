@@ -10,6 +10,7 @@ class PlanningAgent(Agent):
 
     name = "Planning Agent"
     color = Agent.GREEN
+    NUM_DEALS_SELECTION = 5
     DEAL_THRESHOLD = 50
 
     def __init__(self, collection):
@@ -18,7 +19,7 @@ class PlanningAgent(Agent):
         """
         self.log("Planning Agent is initializing")
         self.scanner = ScannerAgent()
-        self.ensemble = EnsembleAgent(collection)
+        self.ensemble = EnsembleAgent(collection) #this instantiates are three pricing agents that collaborate to predict the price
         self.messenger = MessagingAgent()
         self.log("Planning Agent is ready")
 
@@ -46,7 +47,7 @@ class PlanningAgent(Agent):
         self.log("Planning Agent is kicking off a run")
         selection = self.scanner.scan(memory=memory)
         if selection:
-            opportunities = [self.run(deal) for deal in selection.deals[:5]]
+            opportunities = [self.run(deal) for deal in selection.deals[:self.NUM_DEALS_SELECTION]]
             opportunities.sort(key=lambda opp: opp.discount, reverse=True)
             best = opportunities[0]
             self.log(f"Planning Agent has identified the best deal has discount ${best.discount:.2f}")

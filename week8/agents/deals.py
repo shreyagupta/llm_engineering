@@ -44,6 +44,7 @@ class ScrapedDeal:
 
     def __init__(self, entry: Dict[str, str]):
         """
+        entry: is a dictionary of values
         Populate this instance based on the provided dict
         """
         self.title = entry['title']
@@ -95,9 +96,25 @@ class Deal(BaseModel):
 
 class DealSelection(BaseModel):
     """
-    A class to Represent a list of Deals
+    A class to Represent a list of Deals.
     """
     deals: List[Deal]
+    
+    """
+    Example: Deal selection is a single object with just one attrubute "deals":
+    {
+         "deals" : [
+             {
+                 product_description: "abd"
+                 price: 3.39
+                 url: "www.deal_on_abc.com"
+             }
+         ]
+    }
+
+    So when we say to GPT 4, we want the structured output to be in this format, what we're kind of doing is saying we want this to be the kind of JSON that you respond with.
+    """
+
 
 class Opportunity(BaseModel):
     """
